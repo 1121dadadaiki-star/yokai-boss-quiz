@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { bosses } from "@/data/bosses";
 
 export default function GamePage() {
@@ -11,13 +11,20 @@ export default function GamePage() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [gaveUp, setGaveUp] = useState(false);
   const [revealed, setRevealed] = useState<string[]>([]);
-  const correctSound = new Audio("/sounds/correct.mp3");
-  const wrongSound = new Audio("/sounds/wrong.mp3");
-  const giveupSound = new Audio("/sounds/giveup.mp3");
-  const clearSound = new Audio("/sounds/clear.mp3");
+  const correctSound = useRef<HTMLAudioElement | null>(null);
+  const wrongSound = useRef<HTMLAudioElement | null>(null);
+  const giveupSound = useRef<HTMLAudioElement | null>(null);
+  const clearSound = useRef<HTMLAudioElement | null>(null);
 
   const isComplete =
     answered.length === bosses.length || gaveUp;
+  
+  useEffect(() => {
+    correctSound.current = new Audio("/sounds/correct.mp3");
+    wrongSound.current = new Audio("/sounds/wrong.mp3");
+    giveupSound.current = new Audio("/sounds/giveup.mp3");
+    clearSound.current = new Audio("/sounds/clear.mp3");
+  }, []);
 
   useEffect(() => {
     if (isComplete) return;
@@ -30,9 +37,10 @@ export default function GamePage() {
   }, [isComplete]);
   useEffect(() => {
     if (answered.length === bosses.length) {
-      clearSound.currentTime = 0;
-      clearSound.play();
-    } 
+      clearSound.current?.pause();
+      clearSound.current!.currentTime = 0;
+      clearSound.current?.play();
+    }
   }, [answered.length]);
 
   function checkAnswer() {
@@ -41,20 +49,16 @@ export default function GamePage() {
     const boss = bosses.find(
       (b) => b.name === text || b.yomi === text
     );
-
-    if (boss && !answered.includes(boss.name)) {
-      correctSound.currentTime = 0;
-      correctSound.play();
-
-      setAnswered([...answered, boss.name]);
-    }if (boss && !answered.includes(boss.name)) {
-  correctSound.currentTime = 0;
-  correctSound.play();
+if (boss && !answered.includes(boss.name)) {
+  correctSound.current?.pause();
+  correctSound.current!.currentTime = 0;
+  correctSound.current?.play();
 
   setAnswered([...answered, boss.name]);
 } else {
-  wrongSound.currentTime = 0;
-  wrongSound.play();
+  wrongSound.current?.pause();
+  wrongSound.current!.currentTime = 0;
+  wrongSound.current?.play();
 }
 
     setInput("");
@@ -150,6 +154,11 @@ export default function GamePage() {
         <button
           onClick={() => {
             if (!confirm("本当に降参しますか？")) return;
+
+            giveupSound.current?.pause();
+            giveupSound.current!.currentTime = 0;
+            giveupSound.current?.play();
+
             const remaining = bosses
               .filter((boss) => !answered.includes(boss.name))
               .map((boss) => boss.name);
@@ -200,8 +209,9 @@ export default function GamePage() {
         <div className="flex justify-center mt-10">
           <button
             onClick={() => {
-              giveupSound.currentTime = 0;
-              giveupSound.play();
+              giveupSound.current?.pause();
+              giveupSound.current!.currentTime = 0;
+              giveupSound.current?.play();
               setAnswered([]);
               setInput("");
               setTime(0);
