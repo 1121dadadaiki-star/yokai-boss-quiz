@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-slate-900 text-white flex items-center justify-center px-6">
+    <main className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-red-950 text-white flex items-center justify-center px-6">
       <div className="text-center max-w-xl">
 
         <h1 className="text-5xl md:text-6xl font-extrabold">
@@ -13,14 +13,14 @@ export default function Home() {
           ボス全部言えるかな！
         </p>
 
-        <div className="mt-10 rounded-2xl bg-slate-800 p-8 shadow-xl">
+        <div className="mt-10 rounded-2xl bg-slate-800/70 backdrop-blur-md p-8 shadow-2xl border border-slate-700">
 
           <p className="text-lg">
             👹 ボス総数
           </p>
 
           <p className="mt-2 text-4xl font-bold text-yellow-400">
-            43体
+            46体
           </p>
 
           <Link
