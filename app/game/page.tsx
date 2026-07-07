@@ -11,6 +11,10 @@ export default function GamePage() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [gaveUp, setGaveUp] = useState(false);
   const [revealed, setRevealed] = useState<string[]>([]);
+  const correctSound = new Audio("/sounds/correct.mp3");
+  const wrongSound = new Audio("/sounds/wrong.mp3");
+  const giveupSound = new Audio("/sounds/giveup.mp3");
+  const clearSound = new Audio("/sounds/clear.mp3");
 
   const isComplete =
     answered.length === bosses.length || gaveUp;
@@ -24,6 +28,12 @@ export default function GamePage() {
 
     return () => clearInterval(timer);
   }, [isComplete]);
+  useEffect(() => {
+    if (answered.length === bosses.length) {
+      clearSound.currentTime = 0;
+      clearSound.play();
+    } 
+  }, [answered.length]);
 
   function checkAnswer() {
     const text = input.trim();
@@ -33,8 +43,19 @@ export default function GamePage() {
     );
 
     if (boss && !answered.includes(boss.name)) {
+      correctSound.currentTime = 0;
+      correctSound.play();
+
       setAnswered([...answered, boss.name]);
-    }
+    }if (boss && !answered.includes(boss.name)) {
+  correctSound.currentTime = 0;
+  correctSound.play();
+
+  setAnswered([...answered, boss.name]);
+} else {
+  wrongSound.currentTime = 0;
+  wrongSound.play();
+}
 
     setInput("");
   }
@@ -179,6 +200,8 @@ export default function GamePage() {
         <div className="flex justify-center mt-10">
           <button
             onClick={() => {
+              giveupSound.currentTime = 0;
+              giveupSound.play();
               setAnswered([]);
               setInput("");
               setTime(0);
